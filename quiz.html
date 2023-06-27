@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
+  <title>Question and Answer</title>
+  
+</head>
+<body>
+  <h1>Question and Answer</h1>
+  <div class="container">
+    <p class="question" id="question"></p>
+    <input type="text" id="userAnswer" placeholder="Enter your answer">
+    <div class="button-container">
+      <button onclick="checkAnswer()">Check</button>
+    </div>
+    <div class="progress-bar-container">
+      <div class="progress-bar">   </div>
+    </div>
+    
+  </div>
+  <p class="result" id="result"></p>
+  <p class="score" id="score"></p>
+
+  <div class="animation-container" id="animationContainer"></div>
+
+  <script>
+    var questions = [
+      {
+        question: "What is the capital of France?",
+        answer: "paris"
+      },
+      {
+        question: "What is the largest planet in our solar system?",
+        answer: "jupiter"
+      },
+      {
+        question: "Who painted the Mona Lisa?",
+        answer: "leonardo da vinci"
+      }
+    ];
+
+    var currentQuestionIndex = 0;
+    var score = 0;
+
+    // Function to shuffle the array
+    function shuffleArray(array) {
+      for (var i = array.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var temp = array[i];
+        array[i] = array[j];
+        array[j] = temp;
+      }
+      return array;
+    }
+
+    function displayQuestion() {
+      var currentQuestion = questions[currentQuestionIndex];
+      document.getElementById("question").textContent = currentQuestion.question;
+      document.getElementById("userAnswer").value = "";
+      document.getElementById("result").textContent = "";
+    }
+
+    function checkAnswer() {
+      var userAnswer = document.getElementById("userAnswer").value.toLowerCase().trim();
+      var currentQuestion = questions[currentQuestionIndex];
+
+      if (userAnswer === currentQuestion.answer) {
+        document.getElementById("result").textContent = "Correct!";
+        document.getElementById("result").style.color = "#4CAF50";
+        score++;
+      } else {
+        document.getElementById("result").textContent = "Incorrect!";
+        document.getElementById("result").style.color = "#F44336";
+      }
+
+      document.getElementById("score").textContent = "Score: " + score;
+
+      currentQuestionIndex++;
+      if (currentQuestionIndex < questions.length) {
+        displayQuestion();
+      } else {
+        // Quiz is finished
+        document.getElementById("question").textContent = "Quiz Finished!";
+        document.getElementById("userAnswer").style.display = "none";
+        document.getElementsByClassName("button-container")[0].style.display = "none";
+
+        displayFunnyAnimation();
+
+        var restartButton = document.createElement("button");
+        restartButton.textContent = "Restart";
+        restartButton.onclick = restartQuiz;
+        document.getElementById("animationContainer").appendChild(restartButton);
+      }
+    }
+
+    function displayFunnyAnimation() {
+      var animationContainer = document.getElementById("animationContainer");
+      animationContainer.innerHTML = "";
+
+      var animation = document.createElement("span");
+
+      if (score === questions.length) {
+        animation.textContent = "🥳";
+        animation.className = "animation good-animation";
+        animationContainer.classList.add("good-result");
+      } else if (score >= questions.length / 2) {
+        animation.textContent = "😄";
+        animation.className = "animation average-animation";
+        animationContainer.classList.add("average-result");
+      } else {
+        animation.textContent = "😕";
+        animation.className = "animation bad-animation";
+        animationContainer.classList.add("bad-result");
+      }
+
+      animationContainer.appendChild(animation);
+    }
+
+    function restartQuiz() {
+      currentQuestionIndex = 0;
+      score = 0;
+
+      document.getElementById("userAnswer").style.display = "block";
+      document.getElementsByClassName("button-container")[0].style.display = "flex";
+      document.getElementById("score").textContent = "Score: " + score;
+
+      // Shuffle the questions array
+      shuffleArray(questions);
+
+      displayQuestion();
+
+      var animationContainer = document.getElementById("animationContainer");
+      animationContainer.innerHTML = "";
+      animationContainer.classList.remove("good-result", "average-result", "bad-result");
+    }
+
+    // Initial question display
+    shuffleArray(questions);
+    displayQuestion();
+  </script>
+</body>
+</html>
